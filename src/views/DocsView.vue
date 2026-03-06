@@ -244,6 +244,13 @@ onMounted(() => nextTick(injectCopyButtons))
 :deep(.json-key) { color: #7dd3fc; }
 :deep(.json-string) { color: #86efac; }
 :deep(.json-bracket) { color: #fbbf24; }
+:deep(.yaml-key) { color: #7dd3fc; }
+:deep(.yaml-string) { color: #86efac; }
+:deep(.yaml-value) { color: #fbbf24; }
+:deep(.yaml-comment) { color: #6b7280; font-style: italic; }
+:deep(.yaml-bool) { color: #c084fc; }
+:deep(.yaml-number) { color: #f472b6; }
+:deep(.yaml-bracket) { color: #fbbf24; }
 :deep(.copy-btn) { opacity: 0; transition: opacity 0.2s; }
 :deep(.terminal-block:hover .copy-btn) { opacity: 1; }
 </style>

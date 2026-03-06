@@ -42,6 +42,28 @@ const json = text => {
   return line('json-line', nbsp + highlighted)
 }
 
+// YAML syntax highlighted line
+const yaml = text => {
+  const indent = text.match(/^(\s*)/)[1]
+  const nbsp = '&nbsp;'.repeat(indent.length)
+  const trimmed = text.trimStart()
+  const highlighted = trimmed
+    .replace(/^(#.*)$/, '<span class="yaml-comment">$1</span>')
+    .replace(/^([a-zA-Z_$][a-zA-Z0-9_./\-$]*)\s*:/, '<span class="yaml-key">$1</span>:')
+    .replace(/^(-\s+)([a-zA-Z_][a-zA-Z0-9_]*)\s*:/, '-&nbsp;<span class="yaml-key">$2</span>:')
+    .replace(/:\s*'([^']*)'/g, ': <span class="yaml-string">\'$1\'</span>')
+    .replace(/:\s*{([^}]*)}/g, (m, inner) => {
+      const styled = inner.replace(/([a-zA-Z_][a-zA-Z0-9_]*)/g, '<span class="yaml-value">$1</span>')
+      return ': <span class="yaml-bracket">{</span>' + styled + '<span class="yaml-bracket">}</span>'
+    })
+    .replace(/:\s*(https?:\/\/\S+)/g, ': <span class="yaml-string">$1</span>')
+    .replace(/:\s*(true|false|null)\s*$/g, ': <span class="yaml-bool">$1</span>')
+    .replace(/:\s*(\d+\.?\d*)\s*$/g, ': <span class="yaml-number">$1</span>')
+    .replace(/:\s*([A-Z][A-Z_,\s\]]*[A-Z\]])/g, (m, v) => ': <span class="yaml-value">' + v + '</span>')
+    .replace(/\$ref:\s*(.+)/, '\\$ref: <span class="yaml-string">$1</span>')
+  return line('yaml-line', nbsp + highlighted)
+}
+
 export const chapters = [
   // ═══════════════════════════════════════
   // 01 — KIRISH VA O'RNATISH
@@ -976,16 +998,213 @@ ${tb('terminal \u2014 PR review',
   },
 
   // ═══════════════════════════════════════
-  // 16 — REAL LOYIHA
+  // 16 — API DOKUMENTATSIYA ALMASHISH
+  // ═══════════════════════════════════════
+  {
+    id: 'api-docs',
+    num: '16',
+    title: "API Dokumentatsiya Almashish",
+    icon: '\uD83D\uDD04',
+    desc: "Frontend va Backend o'rtasida API kontrakt almashish usullari",
+    content: `
+<h2>16. API Dokumentatsiya Almashish</h2>
+<p>Frontend/Mobile va Backend dasturchilar alohida repolarda ishlayotganda, Claude har ikki tomonda ham bir xil, dolzarb API dokumentatsiyadan foydalanishi uchun qanday tuzilma qurish kerak?</p>
+
+<h3>Muammo</h3>
+<p>Backend dasturchi endpoint yozadi, frontend dasturchi eski yoki noto'g'ri URL/tip bilan composable yozadi \u2014 mos kelmaslik chiqadi. Claude kontraktsiz ishlasa, URL va tiplarni o'ylab topadi.</p>
+<p><strong>Yechim:</strong> <code>openapi.yaml</code> yagona haqiqat manbai bo'ladi, Claude uni o'qib aniq tiplar va endpointlardan foydalanadi.</p>
+
+<h3>1-usul: api-contracts Alohida Repo + Git Submodule</h3>
+<p><strong>Qachon ishlatiladi:</strong> Frontend va backend alohida repolarda, ikkalasi ham bir API ga bog'liq.</p>
+
+${tb('repo tuzilmasi',
+  comment('# Tashkilot repolari:'),
+  plain('company/api-contracts    \u2190 3-repo (yagona haqiqat manbai)'),
+  plain('company/frontend-repo    \u2190 Frontend'),
+  plain('company/backend-repo     \u2190 Backend')
+)}
+
+<p><strong>Backend repoda:</strong></p>
+${tb('terminal \u2014 backend submodule',
+  prompt('git submodule add git@gitlab.com:company/api-contracts.git .api-contracts'),
+  prompt('git commit -m "chore: add api-contracts submodule"')
+)}
+
+<p><strong>Frontend repoda:</strong></p>
+${tb('terminal \u2014 frontend submodule',
+  prompt('git submodule add git@gitlab.com:company/api-contracts.git .api-contracts'),
+  prompt('git commit -m "chore: add api-contracts submodule"')
+)}
+
+<p>Natijada har ikki repoda <code>.api-contracts/openapi.yaml</code> mavjud bo'ladi.</p>
+
+<h3>CLAUDE.md ga qo'shimcha</h3>
+<p><strong>Backend CLAUDE.md:</strong></p>
+${tb('CLAUDE.md \u2014 backend',
+  comment('## API Kontrakt'),
+  plain('Controller yoki DTO yozishdan oldin kontrakt faylini o\'qi:'),
+  plain('@.api-contracts/openapi.yaml'),
+  gap(),
+  plain('Endpoint, request/response strukturasi va status kodlari'),
+  plain('shu faylga mos bo\'lsin. O\'zgartirish kerak bo\'lsa \u2014'),
+  plain('avval openapi.yaml ni yangilang, keyin kod yozing.')
+)}
+
+<p><strong>Frontend CLAUDE.md:</strong></p>
+${tb('CLAUDE.md \u2014 frontend',
+  comment('## API Kontrakt'),
+  plain('Composable, service yoki type yozishdan oldin kontrakt faylini o\'qi:'),
+  plain('@.api-contracts/openapi.yaml'),
+  gap(),
+  plain('Barcha endpoint URL, request body va response type shu fayldan olinsin.'),
+  plain('URL yoki tip hech qachon o\'ylab topilmasin.')
+)}
+
+<h3>Ish jarayoni</h3>
+${tb('workflow',
+  comment('Backend dasturchi:'),
+  plain('  1. Endpoint yozadi'),
+  plain('  2. api-contracts repo ga openapi.yaml commit qiladi'),
+  plain('  3. Frontend ga xabar beradi'),
+  gap(),
+  comment('Frontend dasturchi:'),
+  plain('  1. .api-contracts ni yangilaydi:'),
+  prompt('     git submodule update --remote .api-contracts'),
+  prompt('     git add .api-contracts'),
+  prompt('     git commit -m "chore: update api-contracts to latest"'),
+  plain('  2. Claude openapi.yaml dan aniq tip va URL ishlatadi')
+)}
+
+<h3>2-usul: Mono-repo \u2014 Eng Sodda Yechim</h3>
+<p><strong>Qachon ishlatiladi:</strong> Frontend va backend bitta repoda bo'lganda.</p>
+
+${tb('mono-repo tuzilmasi',
+  plain('monorepo/'),
+  plain('\u251C\u2500\u2500 api-contracts/'),
+  plain('\u2502   \u2514\u2500\u2500 openapi.yaml          \u2190 Yagona haqiqat manbai'),
+  plain('\u251C\u2500\u2500 apps/'),
+  plain('\u2502   \u251C\u2500\u2500 frontend/'),
+  plain('\u2502   \u2502   \u2514\u2500\u2500 .claude/CLAUDE.md'),
+  plain('\u2502   \u2514\u2500\u2500 backend/'),
+  plain('\u2502       \u2514\u2500\u2500 .claude/CLAUDE.md'),
+  plain('\u2514\u2500\u2500 .claude/'),
+  plain('    \u2514\u2500\u2500 CLAUDE.md             \u2190 Root (ikkalasiga ta\'sir)')
+)}
+
+${tb('Root CLAUDE.md',
+  comment('## API Kontrakt \u2014 Barcha Dasturchilar Uchun'),
+  plain('Endpoint, composable yoki service yozishdan oldin o\'qi:'),
+  plain('@api-contracts/openapi.yaml')
+)}
+
+<p>Bu eng sodda yechim \u2014 submodule, CI/CD yoki alohida repo shart emas.</p>
+
+<h3>openapi.yaml Minimal Namuna</h3>
+${tb('openapi.yaml',
+  yaml('openapi: 3.0.3'),
+  yaml('info:'),
+  yaml('  title: Project API'),
+  yaml('  version: 1.0.0'),
+  yaml('servers:'),
+  yaml('  - url: https://api.company.com/api/v1'),
+  gap(),
+  yaml('paths:'),
+  yaml('  /users:'),
+  yaml('    get:'),
+  yaml('      summary: Foydalanuvchilar ro\'yxati'),
+  yaml('      parameters:'),
+  yaml('        - name: page'),
+  yaml('          in: query'),
+  yaml('          schema: { type: integer, default: 0 }'),
+  yaml('      responses:'),
+  yaml('        \'200\':'),
+  yaml('          content:'),
+  yaml('            application/json:'),
+  yaml('              schema:'),
+  yaml('                $ref: \'#/components/schemas/PageUserResponse\''),
+  yaml('    post:'),
+  yaml('      summary: Yangi foydalanuvchi yaratish'),
+  yaml('      requestBody:'),
+  yaml('        required: true'),
+  yaml('        content:'),
+  yaml('          application/json:'),
+  yaml('            schema:'),
+  yaml('              $ref: \'#/components/schemas/CreateUserRequest\''),
+  gap(),
+  yaml('components:'),
+  yaml('  schemas:'),
+  yaml('    CreateUserRequest:'),
+  yaml('      type: object'),
+  yaml('      required: [email, name, password]'),
+  yaml('      properties:'),
+  yaml('        email:  { type: string, format: email }'),
+  yaml('        name:   { type: string, minLength: 2 }'),
+  yaml('        password: { type: string, minLength: 8 }'),
+  gap(),
+  yaml('    UserResponse:'),
+  yaml('      type: object'),
+  yaml('      properties:'),
+  yaml('        id:        { type: integer }'),
+  yaml('        email:     { type: string }'),
+  yaml('        name:      { type: string }'),
+  yaml('        status:    { type: string, enum: [ACTIVE, INACTIVE] }'),
+  yaml('        createdAt: { type: string, format: date-time }')
+)}
+
+<h3>Katta Loyihalar Uchun api-contracts Tuzilmasi</h3>
+${tb('api-contracts/ papka tuzilmasi',
+  plain('api-contracts/'),
+  plain('\u251C\u2500\u2500 openapi.yaml              \u2190 Asosiy spec'),
+  plain('\u251C\u2500\u2500 paths/                    \u2190 Bo\'laklarga ajratish'),
+  plain('\u2502   \u251C\u2500\u2500 users.yaml'),
+  plain('\u2502   \u251C\u2500\u2500 orders.yaml'),
+  plain('\u2502   \u2514\u2500\u2500 products.yaml'),
+  plain('\u251C\u2500\u2500 schemas/                  \u2190 Qayta ishlatiladigan tiplar'),
+  plain('\u2502   \u251C\u2500\u2500 common.yaml'),
+  plain('\u2502   \u2514\u2500\u2500 pagination.yaml'),
+  plain('\u251C\u2500\u2500 examples/                 \u2190 Real response namunalari'),
+  plain('\u2502   \u251C\u2500\u2500 user-list.json'),
+  plain('\u2502   \u2514\u2500\u2500 order-detail.json'),
+  plain('\u2514\u2500\u2500 CHANGELOG.md              \u2190 Qaysi endpoint qachon o\'zgardi')
+)}
+
+<h3>Usullarni Taqqoslash</h3>
+<table>
+  <thead><tr><th></th><th>Submodule (alohida repo)</th><th>Mono-repo</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Repolar</strong></td><td>2\u20133 ta alohida</td><td>Bitta repo</td></tr>
+    <tr><td><strong>Murakkablik</strong></td><td>O'rta</td><td>Sodda</td></tr>
+    <tr><td><strong>Yangilash</strong></td><td><code>git submodule update</code></td><td>Avtomatik</td></tr>
+    <tr><td><strong>Versiya nazorati</strong></td><td>Alohida versiyalanadi</td><td>Birgalikda</td></tr>
+  </tbody>
+</table>
+
+<h3>Qaysi Usulni Tanlash Kerak?</h3>
+<ul>
+  <li><strong>Mono-repo tanlang</strong> \u2014 loyiha endigina boshlanayotgan bo'lsa yoki frontend va backend bir jamoa boshqarsa</li>
+  <li><strong>Submodule tanlang</strong> \u2014 frontend va backend allaqachon alohida repolarda bo'lsa yoki mustaqil deploy bo'lsa</li>
+</ul>
+
+<h3>openapi.yaml ni Kim Yozadi?</h3>
+<ul>
+  <li><strong>Backend dasturchi</strong> asosiy javobgar \u2014 yangi endpoint yozilsa, avval <code>openapi.yaml</code> yangilanadi, keyin kod yoziladi</li>
+  <li><strong>Frontend</strong> bu faylni o'qib, tip va URL larni oladi</li>
+  <li><strong>Ixtilof bo'lsa</strong> \u2014 <code>openapi.yaml</code> haqiqat manbai hisoblanadi</li>
+</ul>
+`
+  },
+
+  // ═══════════════════════════════════════
+  // 17 — REAL LOYIHA
   // ═══════════════════════════════════════
   {
     id: 'real-loyiha',
-    num: '16',
+    num: '17',
     title: "Amaliy Loyiha: Spring + Vue",
     icon: '\uD83C\uDFD7\uFE0F',
     desc: "Spring Boot + Vue 3 \u2014 noldan to'liq loyiha yaratish",
     content: `
-<h2>16. Real Loyiha: Java Spring + PostgreSQL + Vue 3 + TypeScript</h2>
+<h2>17. Real Loyiha: Java Spring + PostgreSQL + Vue 3 + TypeScript</h2>
 <p>Noldan to'liq full-stack loyiha \u2014 bosqichma-bosqich, har birida terminal ko'rinishi bilan.</p>
 
 <h3>Loyiha: TaskManager</h3>
@@ -1071,16 +1290,16 @@ ${tb('claude \u2014 frontend va deploy',
   },
 
   // ═══════════════════════════════════════
-  // 17 — TOOL TAQQOSLASH
+  // 18 — TOOL TAQQOSLASH
   // ═══════════════════════════════════════
   {
     id: 'taqqoslash',
-    num: '17',
+    num: '18',
     title: "Tool Taqqoslash",
     icon: '\u2696\uFE0F',
     desc: "Claude Code vs Cursor vs Antigravity \u2014 qaysi birini tanlash",
     content: `
-<h2>17. Claude Code vs Cursor vs Antigravity</h2>
+<h2>18. Claude Code vs Cursor vs Antigravity</h2>
 <p>Uchala tool ham Claude modelini ishlatishi mumkin. Lekin natija tubdan farqli \u2014 model emas, uni <strong>qanday ishlatish</strong> muhim.</p>
 
 <h3>SWE-bench Verified \u2014 Benchmark Taqqoslash</h3>
