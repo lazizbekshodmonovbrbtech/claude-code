@@ -20,11 +20,6 @@ const openFolders = ref([])
 
 const skillsTree = [
   {
-    type: 'file',
-    label: 'CLAUDE.md',
-    path: 'skills/CLAUDE.md',
-  },
-  {
     type: 'section',
     label: 'FRONTEND',
     children: [
@@ -98,7 +93,7 @@ function getAllFiles(tree) {
 }
 const allFiles = getAllFiles(skillsTree)
 
-const activeFile = computed(() => route.query.file || 'skills/CLAUDE.md')
+const activeFile = computed(() => route.query.file || 'skills/frontend/CLAUDE.md')
 const activeFileName = computed(() => activeFile.value.split('/').pop())
 
 // Find which folder contains active file and auto-open it
@@ -178,7 +173,7 @@ async function downloadZip() {
 
 // Watch file query param
 watch(() => route.query.file, (file) => {
-  const path = file || 'skills/CLAUDE.md'
+  const path = file || 'skills/frontend/CLAUDE.md'
   loadFile(path)
   const folder = findFolderForFile(path)
   if (folder && !openFolders.value.includes(folder)) {
@@ -224,18 +219,6 @@ onMounted(() => {
 
         <!-- Tree nav -->
         <nav class="flex-1 overflow-y-auto p-3 space-y-0.5">
-          <!-- CLAUDE.md standalone -->
-          <button @click="selectFile('skills/CLAUDE.md')"
-                  :class="activeFile === 'skills/CLAUDE.md'
-                    ? (isDark ? 'bg-brand-950 border-brand-800/60 text-brand-300' : 'bg-brand-50 border-brand-300 text-brand-700')
-                    : (isDark ? 'border-transparent text-slate-400 hover:text-white hover:bg-dark-800' : 'border-transparent text-slate-500 hover:text-slate-900 hover:bg-slate-100')"
-                  class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-all text-left">
-            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
-            CLAUDE.md
-          </button>
-
           <template v-for="section in skillsTree.filter(n => n.type === 'section')" :key="section.label">
             <!-- Section separator -->
             <div class="px-3 pt-4 pb-1 text-xs font-mono uppercase tracking-wider"
