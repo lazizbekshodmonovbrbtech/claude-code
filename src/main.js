@@ -5,14 +5,16 @@ import './assets/main.css'
 
 import LandingView  from './views/LandingView.vue'
 import DocsView     from './views/DocsView.vue'
+import SkillsView   from './views/SkillsView.vue'
 import NotFoundView from './views/NotFoundView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/',         component: LandingView },
-    { path: '/docs',     component: DocsView },
-    { path: '/docs/:id', component: DocsView },
+    { path: '/',            component: LandingView },
+    { path: '/docs',        component: DocsView },
+    { path: '/docs/skills', component: SkillsView },
+    { path: '/docs/:id',    component: DocsView },
     { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFoundView },
   ],
   scrollBehavior(to) {

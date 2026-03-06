@@ -53,11 +53,18 @@ const mobileOpen = ref(false)
           Bosh sahifa
         </button>
         <button @click="router.push('/docs')"
-                :class="route.path.startsWith('/docs')
+                :class="route.path.startsWith('/docs') && route.path !== '/docs/skills'
                   ? (isDark ? 'text-brand-400 bg-brand-950' : 'text-brand-600 bg-brand-50')
                   : (isDark ? 'text-slate-400 hover:text-white hover:bg-dark-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100')"
                 class="px-3 py-2 rounded-lg text-sm font-medium transition-all">
           Qo'llanma
+        </button>
+        <button @click="router.push('/docs/skills')"
+                :class="route.path === '/docs/skills'
+                  ? (isDark ? 'text-brand-400 bg-brand-950' : 'text-brand-600 bg-brand-50')
+                  : (isDark ? 'text-slate-400 hover:text-white hover:bg-dark-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100')"
+                class="px-3 py-2 rounded-lg text-sm font-medium transition-all">
+          Skills
         </button>
         <a href="https://code.claude.com/docs/en/overview" target="_blank"
            :class="isDark ? 'text-slate-400 hover:text-white hover:bg-dark-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'"
@@ -121,6 +128,7 @@ const mobileOpen = ref(false)
          :class="isDark ? 'border-dark-800 bg-dark-950' : 'border-slate-200 bg-white'">
       <button @click="router.push('/'); mobileOpen=false" class="nav-link w-full">Bosh sahifa</button>
       <button @click="router.push('/docs'); mobileOpen=false" class="nav-link w-full">Qo'llanma</button>
+      <button @click="router.push('/docs/skills'); mobileOpen=false" class="nav-link w-full">Skills</button>
       <a href="https://claude.ai/new" target="_blank" class="nav-link block w-full" @click="mobileOpen=false">Claude Chat</a>
     </div>
   </nav>
