@@ -44,6 +44,47 @@ onMounted(() => {
 const activeIndex   = computed(() => chapters.findIndex(c => c.id === activeId.value))
 const prevChapter   = computed(() => chapters[activeIndex.value - 1] || null)
 const nextChapter   = computed(() => chapters[activeIndex.value + 1] || null)
+
+const contentRef = ref(null)
+
+function injectCopyButtons() {
+  if (!contentRef.value) return
+  contentRef.value.querySelectorAll('.terminal-block').forEach(block => {
+    if (block.querySelector('.copy-btn')) return
+    const bar = block.querySelector('.terminal-bar')
+    if (!bar) return
+
+    // Wrap existing bar children (dots + title) in a div
+    const left = document.createElement('div')
+    left.className = 'flex items-center gap-1.5'
+    while (bar.firstChild) left.appendChild(bar.firstChild)
+
+    const btn = document.createElement('button')
+    btn.className = 'copy-btn flex items-center gap-1.5 text-xs font-mono text-slate-500 hover:text-brand-400 transition-colors'
+    const copyIcon = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke-width="2"/></svg>'
+    const checkIcon = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>'
+    btn.innerHTML = copyIcon + '<span>Nusxa olish</span>'
+    btn.addEventListener('click', () => {
+      const body = block.querySelector('.terminal-body')
+      const text = body ? body.innerText : ''
+      navigator.clipboard.writeText(text).then(() => {
+        btn.innerHTML = checkIcon + '<span>Nusxa olindi!</span>'
+        setTimeout(() => {
+          btn.innerHTML = copyIcon + '<span>Nusxa olish</span>'
+        }, 2000)
+      })
+    })
+
+    bar.style.display = 'flex'
+    bar.style.justifyContent = 'space-between'
+    bar.style.alignItems = 'center'
+    bar.appendChild(left)
+    bar.appendChild(btn)
+  })
+}
+
+watch(activeChapter, () => nextTick(injectCopyButtons))
+onMounted(() => nextTick(injectCopyButtons))
 </script>
 
 <template>
@@ -67,7 +108,7 @@ const nextChapter   = computed(() => chapters[activeIndex.value + 1] || null)
              ]"
              class="fixed md:sticky top-16 left-0 z-40 h-[calc(100vh-64px)]
                     w-72 border-r
-                    flex flex-col overflow-y-auto transition-all duration-300 ease-in-out">
+                    flex flex-col overflow-hidden transition-all duration-300 ease-in-out">
 
         <!-- Search button -->
         <div class="p-4 border-b" :class="isDark ? 'border-dark-800' : 'border-slate-200'">
@@ -89,11 +130,11 @@ const nextChapter   = computed(() => chapters[activeIndex.value + 1] || null)
         </div>
 
         <!-- Chapter list -->
-        <nav class="flex-1 p-3 space-y-0.5">
-          <div class="px-3 py-2 text-xs font-mono uppercase tracking-wider"
-               :class="isDark ? 'text-slate-600' : 'text-slate-400'">
-            Bo'limlar
-          </div>
+        <div class="px-6 pt-3 pb-2 text-xs font-mono uppercase tracking-wider"
+             :class="isDark ? 'text-slate-600' : 'text-slate-400'">
+          Bo'limlar
+        </div>
+        <nav class="flex-1 overflow-y-auto p-3 pt-0 space-y-0.5">
           <button v-for="ch in chapters" :key="ch.id"
                   @click="navigate(ch.id)"
                   :class="activeId === ch.id
@@ -158,7 +199,7 @@ const nextChapter   = computed(() => chapters[activeIndex.value + 1] || null)
         </div>
 
         <!-- Content -->
-        <article class="prose-custom"
+        <article ref="contentRef" class="prose-custom"
                  v-html="activeChapter.content" />
 
         <!-- Nav buttons -->
@@ -200,4 +241,9 @@ const nextChapter   = computed(() => chapters[activeIndex.value + 1] || null)
 :deep(.code-line.warning) { @apply text-yellow-400; }
 :deep(.code-line.action) { @apply text-sky-400; }
 :deep(.terminal-block) { @apply my-6; }
+:deep(.json-key) { color: #7dd3fc; }
+:deep(.json-string) { color: #86efac; }
+:deep(.json-bracket) { color: #fbbf24; }
+:deep(.copy-btn) { opacity: 0; transition: opacity 0.2s; }
+:deep(.terminal-block:hover .copy-btn) { opacity: 1; }
 </style>

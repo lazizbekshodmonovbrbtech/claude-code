@@ -30,6 +30,18 @@ const action = text => line('action', text)
 const plain = text => line('', text)
 const gap = () => plain(' ')
 
+// JSON syntax highlighted line
+const json = text => {
+  const indent = text.match(/^(\s*)/)[1]
+  const nbsp = '&nbsp;'.repeat(indent.length)
+  const trimmed = text.trimStart()
+  const highlighted = trimmed
+    .replace(/("(?:\\.|[^"\\])*")\s*:/g, '<span class="json-key">$1</span>:')
+    .replace(/:\s*("(?:\\.|[^"\\])*")/g, ': <span class="json-string">$1</span>')
+    .replace(/([{}[\]])/g, '<span class="json-bracket">$1</span>')
+  return line('json-line', nbsp + highlighted)
+}
+
 export const chapters = [
   // ═══════════════════════════════════════
   // 01 — KIRISH VA O'RNATISH
@@ -407,38 +419,38 @@ ${tb('terminal',
 
 <h3>Java Checkstyle Hook</h3>
 ${tb('.claude/settings.json \u2014 hooks',
-  plain('{'),
-  plain('  "hooks": {'),
-  plain('    "PostToolUse": [{'),
-  plain('      "matcher": "Write|Edit",'),
-  plain('      "hooks": [{'),
-  plain('        "type": "command",'),
-  plain('        "command": "mvn checkstyle:check -q"'),
-  plain('      }]'),
-  plain('    }]'),
-  plain('  }'),
-  plain('}')
+  json('{'),
+  json('  "hooks": {'),
+  json('    "PostToolUse": [{'),
+  json('      "matcher": "Write|Edit",'),
+  json('      "hooks": [{'),
+  json('        "type": "command",'),
+  json('        "command": "mvn checkstyle:check -q"'),
+  json('      }]'),
+  json('    }]'),
+  json('  }'),
+  json('}')
 )}
 
 <h3>TypeScript \u2014 Prettier Hook</h3>
 ${tb('.claude/settings.json \u2014 prettier',
-  plain('{'),
-  plain('  "hooks": {'),
-  plain('    "PostToolUse": [{'),
-  plain('      "matcher": "Write|Edit",'),
-  plain('      "hooks": [{'),
-  plain('        "type": "command",'),
-  plain('        "command": "npx prettier --write ."'),
-  plain('      }]'),
-  plain('    }],'),
-  plain('    "Stop": [{'),
-  plain('      "hooks": [{'),
-  plain('        "type": "command",'),
-  plain('        "command": "npm test"'),
-  plain('      }]'),
-  plain('    }]'),
-  plain('  }'),
-  plain('}')
+  json('{'),
+  json('  "hooks": {'),
+  json('    "PostToolUse": [{'),
+  json('      "matcher": "Write|Edit",'),
+  json('      "hooks": [{'),
+  json('        "type": "command",'),
+  json('        "command": "npx prettier --write ."'),
+  json('      }]'),
+  json('    }],'),
+  json('    "Stop": [{'),
+  json('      "hooks": [{'),
+  json('        "type": "command",'),
+  json('        "command": "npm test"'),
+  json('      }]'),
+  json('    }]'),
+  json('  }'),
+  json('}')
 )}
 
 <p><strong>Muhim:</strong> Hook xatosi Claude'ga qaytariladi va u xatoni tuzatishga harakat qiladi. Bu sifat nazoratining eng kuchli mexanizmi.</p>
@@ -472,22 +484,22 @@ ${tb('.claude/settings.json \u2014 prettier',
 <h3>.mcp.json konfiguratsiya</h3>
 <p>Loyiha ildizida <code>.mcp.json</code> fayl yarating. Bu Git'ga qo'shiladi va jamoa bilan bo'lishiladi:</p>
 ${tb('.mcp.json',
-  plain('{'),
-  plain('  "mcpServers": {'),
-  plain('    "github": {'),
-  plain('      "command": "npx",'),
-  plain('      "args": ["@modelcontextprotocol/server-github"],'),
-  plain('      "env": { "GITHUB_TOKEN": "ghp_..." }'),
-  plain('    },'),
-  plain('    "postgres": {'),
-  plain('      "command": "npx",'),
-  plain('      "args": ['),
-  plain('        "@modelcontextprotocol/server-postgres",'),
-  plain('        "postgresql://user:pass@localhost/mydb"'),
-  plain('      ]'),
-  plain('    }'),
-  plain('  }'),
-  plain('}')
+  json('{'),
+  json('  "mcpServers": {'),
+  json('    "github": {'),
+  json('      "command": "npx",'),
+  json('      "args": ["@modelcontextprotocol/server-github"],'),
+  json('      "env": { "GITHUB_TOKEN": "ghp_..." }'),
+  json('    },'),
+  json('    "postgres": {'),
+  json('      "command": "npx",'),
+  json('      "args": ['),
+  json('        "@modelcontextprotocol/server-postgres",'),
+  json('        "postgresql://user:pass@localhost/mydb"'),
+  json('      ]'),
+  json('    }'),
+  json('  }'),
+  json('}')
 )}
 
 <h3>MCP bilan ishlash</h3>
@@ -528,23 +540,23 @@ ${tb('.mcp.json',
 <h3>Settings orqali ruxsatlar</h3>
 <p><code>.claude/settings.json</code> faylida aniq ruxsatlar berish mumkin:</p>
 ${tb('.claude/settings.json \u2014 permissions',
-  plain('{'),
-  plain('  "permissions": {'),
-  plain('    "allow": ['),
-  plain('      "Read",'),
-  plain('      "Glob",'),
-  plain('      "Grep",'),
-  plain('      "Bash(mvn test)",'),
-  plain('      "Bash(npm test)",'),
-  plain('      "Bash(git status)",'),
-  plain('      "Bash(git diff)"'),
-  plain('    ],'),
-  plain('    "deny": ['),
-  plain('      "Bash(rm -rf *)",'),
-  plain('      "Bash(curl*|*sudo*)"'),
-  plain('    ]'),
-  plain('  }'),
-  plain('}')
+  json('{'),
+  json('  "permissions": {'),
+  json('    "allow": ['),
+  json('      "Read",'),
+  json('      "Glob",'),
+  json('      "Grep",'),
+  json('      "Bash(mvn test)",'),
+  json('      "Bash(npm test)",'),
+  json('      "Bash(git status)",'),
+  json('      "Bash(git diff)"'),
+  json('    ],'),
+  json('    "deny": ['),
+  json('      "Bash(rm -rf *)",'),
+  json('      "Bash(curl*|*sudo*)"'),
+  json('    ]'),
+  json('  }'),
+  json('}')
 )}
 
 <h3>Xavfsizlik qoidalari</h3>
