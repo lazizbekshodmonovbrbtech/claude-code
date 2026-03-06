@@ -1,0 +1,177 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { @apply border-dark-700; }
+  .dark ::selection { @apply bg-brand-500/30 text-brand-200; }
+  html:not(.dark) ::selection { @apply bg-brand-500/20 text-brand-800; }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { @apply bg-dark-900; }
+  ::-webkit-scrollbar-thumb { @apply bg-dark-600 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-brand-700; }
+
+  html:not(.dark) ::-webkit-scrollbar-track { background: #f1f5f9; }
+  html:not(.dark) ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+
+  /* Smooth scrolling */
+  html { scroll-behavior: smooth; }
+
+  /* Prevent horizontal overflow on mobile */
+  body { overflow-x: hidden; }
+}
+
+/* ===== LIGHT THEME OVERRIDES ===== */
+html:not(.dark) body {
+  @apply bg-white text-slate-900;
+}
+html:not(.dark) * {
+  border-color: #e2e8f0;
+}
+
+@layer components {
+  .terminal-block {
+    @apply bg-dark-900 border border-dark-700 rounded-xl overflow-hidden font-mono text-sm;
+  }
+  .terminal-bar {
+    @apply flex items-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-dark-800 border-b border-dark-700;
+  }
+  .terminal-dot { @apply w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full; }
+  .terminal-body { @apply p-3 sm:p-5 space-y-1 overflow-x-auto; }
+
+  .nav-link {
+    @apply flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
+           text-slate-400 hover:text-white hover:bg-dark-800
+           transition-all duration-200;
+  }
+  .nav-link.active {
+    @apply text-brand-400 bg-brand-950 hover:bg-brand-950;
+  }
+  .section-badge {
+    @apply inline-flex items-center gap-1.5 text-xs font-mono font-medium
+           text-brand-400 bg-brand-950 border border-brand-800/60
+           px-2.5 py-1 rounded-full;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm
+           bg-brand-500 hover:bg-brand-400 text-dark-950
+           transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]
+           shadow-lg shadow-brand-500/25;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm
+           border border-dark-600 hover:border-brand-700 text-slate-300 hover:text-white
+           transition-all duration-200 hover:bg-dark-800;
+  }
+
+  .card {
+    @apply bg-dark-900 border border-dark-700 rounded-2xl p-4 sm:p-6
+           hover:border-brand-800 transition-all duration-300;
+  }
+  .glow-green {
+    box-shadow: 0 0 60px rgba(22,176,106,0.15), 0 0 120px rgba(22,176,106,0.05);
+  }
+  .text-gradient {
+    @apply bg-gradient-to-r from-brand-300 via-brand-400 to-emerald-300
+           bg-clip-text text-transparent;
+  }
+
+  /* ===== PROSE STYLES ===== */
+  .prose-custom h2 { @apply font-display text-xl sm:text-2xl font-bold text-white mt-8 sm:mt-10 mb-4; }
+  .prose-custom h3 { @apply font-display text-base sm:text-lg font-semibold text-brand-300 mt-6 sm:mt-8 mb-3; }
+  .prose-custom p  { @apply text-slate-300 text-sm sm:text-base leading-relaxed mb-4; }
+  .prose-custom ul { @apply space-y-2 mb-4; }
+  .prose-custom li { @apply text-slate-300 text-sm sm:text-base flex gap-2 items-start; }
+  .prose-custom li::before { content: '\2192'; @apply text-brand-500 font-mono flex-shrink-0 mt-0.5; }
+
+  /* Tables — horizontal scroll on mobile */
+  .prose-custom table {
+    @apply w-full text-sm mb-6 border-collapse;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .prose-custom thead { display: table; width: 100%; table-layout: fixed; }
+  .prose-custom tbody { display: table; width: 100%; table-layout: fixed; }
+  .prose-custom tr { display: table-row; }
+  .prose-custom th  {
+    @apply text-left text-xs font-mono text-brand-400 uppercase tracking-wider
+           px-3 sm:px-4 py-2.5 sm:py-3 bg-dark-800 border-b border-dark-700;
+    white-space: nowrap;
+  }
+  .prose-custom td  {
+    @apply px-3 sm:px-4 py-2.5 sm:py-3 text-slate-300 border-b border-dark-800 text-sm;
+  }
+  .prose-custom tr:hover td { @apply bg-dark-800/40; }
+  .prose-custom strong { @apply text-white font-semibold; }
+  .prose-custom code {
+    @apply font-mono text-brand-300 bg-brand-950/60 px-1 sm:px-1.5 py-0.5 rounded;
+    font-size: 0.8em;
+    word-break: break-word;
+  }
+
+  /* Terminal blocks — responsive */
+  .prose-custom .terminal-block { @apply my-4 sm:my-6; }
+  .prose-custom .code-line {
+    @apply font-mono text-slate-300 leading-relaxed;
+    font-size: 0.7rem;
+  }
+  @media (min-width: 640px) {
+    .prose-custom .code-line { font-size: 0.8rem; }
+  }
+
+  /* ===== LIGHT THEME COMPONENT OVERRIDES ===== */
+  html:not(.dark) .section-badge {
+    @apply text-brand-600 bg-brand-50 border-brand-200;
+  }
+  html:not(.dark) .btn-ghost {
+    @apply border-slate-300 text-slate-600 hover:text-slate-900 hover:bg-slate-100 hover:border-brand-400;
+  }
+  html:not(.dark) .card {
+    @apply bg-white border-slate-200 hover:border-brand-400;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+  html:not(.dark) .card:hover {
+    box-shadow: 0 4px 12px rgba(22,176,106,0.1), 0 2px 4px rgba(0,0,0,0.06);
+  }
+  html:not(.dark) .glow-green {
+    box-shadow: 0 0 40px rgba(22,176,106,0.08), 0 0 80px rgba(22,176,106,0.04);
+  }
+  html:not(.dark) .text-gradient {
+    @apply from-brand-600 via-brand-500 to-emerald-500;
+  }
+  html:not(.dark) .nav-link {
+    @apply text-slate-500 hover:text-slate-900 hover:bg-slate-100;
+  }
+  html:not(.dark) .nav-link.active {
+    @apply text-brand-600 bg-brand-50;
+  }
+
+  /* Light prose */
+  html:not(.dark) .prose-custom h2 { @apply text-slate-900; }
+  html:not(.dark) .prose-custom h3 { @apply text-brand-600; }
+  html:not(.dark) .prose-custom p  { @apply text-slate-600; }
+  html:not(.dark) .prose-custom li { @apply text-slate-600; }
+  html:not(.dark) .prose-custom th { @apply bg-slate-50 text-brand-600 border-slate-200; }
+  html:not(.dark) .prose-custom td { @apply text-slate-600 border-slate-100; }
+  html:not(.dark) .prose-custom tr:hover td { @apply bg-slate-50; }
+  html:not(.dark) .prose-custom strong { @apply text-slate-900; }
+  html:not(.dark) .prose-custom code { @apply text-brand-600 bg-brand-50; }
+}
+
+/* ===== LOGO DARK MODE ===== */
+  .logo-white .logo-text { fill: #ffffff; }
+
+/* ===== MOBILE-SPECIFIC RESPONSIVE ===== */
+@media (max-width: 639px) {
+  /* Smaller glow on mobile to prevent any overflow */
+  .glow-green {
+    box-shadow: 0 0 30px rgba(22,176,106,0.1), 0 0 60px rgba(22,176,106,0.03);
+  }
+
+  /* Buttons full width on very small screens */
+  .btn-primary, .btn-ghost {
+    @apply w-full justify-center;
+  }
+}

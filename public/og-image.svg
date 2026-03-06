@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#060d0a"/>
+      <stop offset="100%" stop-color="#0b1610"/>
+    </linearGradient>
+    <linearGradient id="brand" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#73e2ad"/>
+      <stop offset="50%" stop-color="#39cc88"/>
+      <stop offset="100%" stop-color="#16b06a"/>
+    </linearGradient>
+    <linearGradient id="logo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#39cc88"/>
+      <stop offset="100%" stop-color="#087248"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Grid pattern -->
+  <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+    <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(22,176,106,0.06)" stroke-width="1"/>
+  </pattern>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Glow -->
+  <ellipse cx="600" cy="250" rx="400" ry="200" fill="rgba(22,176,106,0.08)"/>
+
+  <!-- Logo -->
+  <rect x="520" y="140" width="56" height="56" rx="14" fill="url(#logo)"/>
+  <path d="M536 170L546 160L536 150" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M548 174H560" stroke="white" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+  <!-- Title -->
+  <text x="600" y="160" text-anchor="middle" fill="white" font-family="Space Grotesk, sans-serif" font-size="22" font-weight="500" dy="100">Claude Code</text>
+  <text x="600" y="300" text-anchor="middle" fill="url(#brand)" font-family="Space Grotesk, sans-serif" font-size="64" font-weight="700">Professional</text>
+  <text x="600" y="370" text-anchor="middle" fill="white" font-family="Space Grotesk, sans-serif" font-size="64" font-weight="700">Qo'llanma</text>
+
+  <!-- Subtitle -->
+  <text x="600" y="430" text-anchor="middle" fill="rgba(148,163,184,0.8)" font-family="Space Grotesk, sans-serif" font-size="22">17 bo'lim  |  Java, TypeScript, JavaScript  |  Real loyiha misollari</text>
+
+  <!-- Badge -->
+  <rect x="445" y="470" width="310" height="40" rx="20" fill="rgba(22,176,106,0.15)" stroke="rgba(22,176,106,0.3)" stroke-width="1"/>
+  <text x="600" y="496" text-anchor="middle" fill="#39cc88" font-family="JetBrains Mono, monospace" font-size="14">O'zbek tilida yagona professional qo'llanma</text>
+
+  <!-- Bottom border -->
+  <rect x="0" y="620" width="1200" height="10" fill="url(#brand)"/>
+</svg>
