@@ -292,7 +292,7 @@ ${tb('Optimal workflow',
   // 05 — SKILLS
   // ═══════════════════════════════════════
   {
-    id: 'skills',
+    id: 'skills-andozalar',
     num: '05',
     title: "Skills va Andozalar",
     icon: '\uD83D\uDCDA',
